@@ -16,32 +16,14 @@ const api = axios.create({
 
 function createMovies (movies, container){
 
-  container.innerHTML="";
-    
-     movies.forEach(movie => {
-        
-        const movieContainer = document.createElement('div');
-        movieContainer.classList.add('movie-container');
-        movieContainer.addEventListener('click', ()=>{
+    container.innerHTML = '';
 
-          location.hash = '#movie=' + movie.id;
-
-        });
-
-        const movieImg = document.createElement('img');
-        movieImg.classList.add('movie-img');
-        movieImg.setAttribute('alt', movie.title);
-        movieImg.setAttribute('src', 'https://image.tmdb.org/t/p/w300'+ movie.poster_path);
-        
-        movieContainer.appendChild(movieImg);
-        trendingMoviesPreviewList.appendChild(movieContainer);
-
-
-        genericSection.innerHTML = "";
-  
   movies.forEach(movie => {
     const movieContainer = document.createElement('div');
     movieContainer.classList.add('movie-container');
+    movieContainer.addEventListener('click', () => {
+      location.hash = '#movie=' + movie.id;
+    });
 
     const movieImg = document.createElement('img');
     movieImg.classList.add('movie-img');
@@ -52,9 +34,9 @@ function createMovies (movies, container){
     );
 
     movieContainer.appendChild(movieImg);
-    genericSection.appendChild(movieContainer);
+    container.appendChild(movieContainer);
   });
-    });
+    
 }
 
 function createCategories (categories, container){
@@ -162,5 +144,15 @@ async function getMovieById(id){
     movieDetailScore.textContent= movie.vote_average ;
 
     createCategories(movie.genres, movieDetailCategoriesList);
-   
+
+  
+  getRelatedMoviesId(id);
+}
+
+async function getRelatedMoviesId(id) {
+  const { data } = await api(`movie/${id}/recommendations`);
+  const relatedMovies = data.results;
+  console.log(relatedMovies);
+  
+  createMovies(relatedMovies, relatedMoviesContainer);
 }
